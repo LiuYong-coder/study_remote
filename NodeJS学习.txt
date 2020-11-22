@@ -1,0 +1,466 @@
+
+
+
+nodejs 的相关模块
+npm 安装其他相关的第三方模块
+基于Chrome V8引擎的JacaScript的运行环境 时间驱动，非阻塞的I/O
+libuv 异步文件读写IO的库 跨平台的库
+nodejs 底层依赖与 libuv chrome V8 的框架绑定起来
+
+使用JavaScript开发处高效的服务端应用
+libuv + chrome V8 事件驱动 异步IO 高效的JS解释器
+环境：
+Node 是单进程的
+
+自动配置环境变量
+NODE_PATH %AppData%\npm\node_modeules
+NODE_PATH 是npm安装好的模块所在的搜索路径 搜索第三方模块的路径 
+C:\User\用户名\AppData\Roaming\npm
+cygwin windows Linux的环境模拟
+
+Linux的常用命令
+    rm -rf 删除文件夹
+    find ./ -name "main.js" 
+    find ./ -name "main*"
+绝对路径 /开头  相对路径 当前路径开始 
+
+MongoDB是为快速开发互联网Web应用而设计的互联网的数据库系统
+快速
+面向文档的 存储BSON 二进制的数据
+存储和操作的类型都是文档
+安装：偶数版是稳定版
+https://www.mongodb.org/dl/win32/
+配置环境变量
+    启动数据库
+    在计算C盘根目录创建文件夹 在data中创建db默认的数据库的目录 
+    cmd mongod 启动mongodb服务器 
+    数据库的服务器 保存到服务器 
+    客户端
+    mongo连接mongodb数据库
+
+    mongod  --dbpath C:\User\ 设置数据库的启动路径 mongodb默认的端口号 27017 
+            --port 指定端口号
+    将mongodb设置为系统服务，可以在后台自动启动
+    1.在C盘根目录
+    2.在目录下创建配置文件 
+        mongo.cfg
+        systemLog:
+            destination: file
+            path: c:\data\log\mongod.log
+        storage:
+            dbPath: c:\data\db
+    3.以管理员的身份打开cmd
+    4.执行命令
+        sc.exe create MongoDB binpath= "\"C:Program File\MongoDB\Server\bin" --service --config=\"C:\Program
+        xxx\mongodb.cfg\"" DisplayName="MongoDB" start="auto"
+    5.任务管理器启动mongodb数据库
+
+mongodb 文档中数据库和集合不需要手动创建
+当创建文档时，如果创建的文档所在的数据库不存在，会创建这个数据库
+
+    show dbs
+    use 数据库名
+    db 显示当前所在的数据库名
+    show collections 查看当前所在的数据库中的所有集合
+    CRUD 操作
+        向数据库中插入文档
+        向集合中添加文档 
+        db.<collection>.insert(doc)
+        向test集合中添加一个学生对象
+        stu = {name:"yong",age:23}
+        db.test.insert(stu)
+    查询集合中所有文档
+        db.<collection>.find()
+    
+
+数据库 集合 文档
+
+创建一个聊天服务器
+创建新的TCP服务器
+var net = require('net')
+var chatServer = net.createServer()
+
+chatServer.on('connection',function(client){
+    client.write('Hi!\n');
+    client.write('Bye!\n');
+    client.end()
+})
+
+chatServer.listen(9000)
+加载了net模块，包含了Node需要的所有的TCP功能，
+net.createServer()创建了一个新的TCP服务器
+on()方法添加了新的事件监听器
+每当有新的客户端通关网络连接接入服务器时，就会触发connection事件
+事件监听器就会调用我们指定的函数
+连接事件在调用回调函数时，会传给我们新客户端所对应的TCP socket对象的引用
+
+早期的网络是总线型网络
+同一条线路上只能由一台主机通信 A和B之间的通信是通过电信号进行通信的
+A与B通信，整条线路的其他主机就无法通信，整条线路的其他主机就没法使用
+一个网络中只有有限的主机，A,B之间 C,D之间互不干扰
+隔离，网桥，有效的隔离了冲突，
+A如果不与C通信，不会占用右方的资源
+A和B在用一个网络中就不转发信号，网桥的内部有一个小的数据表，收到信号后判断是否进行转发
+接收方的MAC地址，MA MR 地址16进制的数据表示
+A不知道网络中是否有B存在时，发送一个FFFFFFFF，这时网桥无条件进行转发
+通信的时候，填上B的IP地址，网桥查表进行判断是否进行转发
+网桥把信号发给了另一个小网络，这时候就会可能进行冲突
+多个端口的网络就是交换机
+A B C D 各自使用一个端口，每个主机跟端口冲突 冲突的范围限定的更小了
+主机跟交换机的端口 两根线 一个发 一根收 全双工 同时进行收发
+
+源地址 A 目标 FFFFFFFF 广播 跟发送端的目的地址有关系 跟交换机没关系
+广播现象无法解决冲突
+主机之间的广播是必不可少的
+有效的隔离广播，交换机与交换机之间 本地内部的通信不会发生干扰
+地址无法有效的标识网络 出现逻辑地址 一个接口不会转发广播信号 不是通信才进行转发
+区分是否是不同的网络 IP地址 通信之间靠发报文通过IP地址
+本地之间通过MAC IP标识是否在用一个网络中
+MAC地址不能跨网络 交换网络的报文加下来转给另一个网络 中间涉及到MAC地址的转换
+路由器 本地主机发数据给路由器
+有了本地网路时候，A和B的逻辑地址通信 交给网关，网关判断是否交给路由器
+逻辑地址 MAC地址 通信最终还是要靠MAC地址 本地通信还是要靠广播
+响应填入MAC 地址解析ARP
+1.1 跟 2.1 不是同一个网络 逻辑地址分为两段 网络地址 主机地址
+子网掩码的目的主要是判断逻辑哪一个部门是网络 哪一部分是主机 一堆1和1堆0
+0000 0001 . 0000 0001
+1111 1111 . 0000 0000 计算处网络地址是什么
+自己的掩码 跟自己和目标主机 & 不相同通过网关进行转发
+本地主机的IP跟网关在同一个网络中
+路由表 
+路由器连接着路由器 主机进行通信？
+
+I would like to thank my examiner Profss
+Introduction
+The number of processing units integrates into a single die or package is increasing.
+We will see more and more general-purpose or even embedded processors with dozens,
+
+
+掉了一个装备，3秒中没有人捡起，就要隐藏这个装备
+
+操作系统接入网络需要配置的地方
+    IP 
+    NETMASK
+    GATEWAY
+    DNS1
+    DNS2
+    DNS1 查不到第二个肯定也查不到
+    路由信息
+    DHCP Dynamic Host Configure Protocol
+    获得不到？169.254.xxx 随机配置
+可以手动配置，也可以动态获取，
+
+Linux网络属于内核的部分 地址是属于内核的，当前主机上由这个网卡，都可以ping通
+两块网卡
+
+Linux 识别接口
+lo：本地回环 自己又是客户端又是服务器
+每一个网络接口都有一个lo接口
+以太网网卡：ethxx
+pppX:
+    靠硬件设备的文件访问，名称的机制，别名
+cat /etc/modprobe.conf
+    alias 定义
+/etc/udev/rules.d/70xx-net.rules
+
+以太网网卡：ethX
+
+ifconfig 古老的配置网络的命令
+Link encap Ethernet
+ifconfig
+    -a 显示所有的连接 所有的接口的配置信息
+ifconfig eth0 网络接口的信息
+ifconfig ethX IP/MASK
+RX packets: 接受到的数据包的个数
+RX bytes
+
+子网掩码是必须指定的
+ifconfig 配置立即生效，但是不会永久有效，重启网络服务或者主机会失效
+    /etc/inet.d/network {start | stop | restart | starus}
+    /etc/inet.d/NetworkManger {start | stop | restart} 关闭这个服务
+
+其他人Ping不同 内核中TCP协议栈是否工作正常
+
+网关：route
+    man route
+
+http server 
+
+
+
+If you're reading this book,you probably know already that Erlang is programming language-and as such it's pretty
+interesting in itself-but as the title of the book indicates,our focus us on the practical use of Erlang for
+creating real,live systems.
+
+route
+    add 添加
+        -host 到某个网络的
+        -net 0.0.0.0 添加默认路由
+
+    del 删除
+
+route -net 10.0.0.0/8 gw 192.168.10.1   
+
+掉了一个装备，3秒钟没有人捡起，就要隐藏这个装备
+定时器触发：
+    OS 提供了定时器
+    OS 的定时器的资源是有限的
+正确的做法：设计一个timer模块
+
+timer需要包含的功能：
+Timer 3 秒钟调用函数，执行代码，多少秒执行函数
+    1.5秒有玩家捡起装备，concel这个timer，
+
+返回一个唯一的timer_id号 方便cancel_timer时通过Id号直接取消掉
+unsigned int 
+        add_timer(struct timer_list* list,void(*on_timer)(void* udata),
+    void *udata,float after_sec);
+
+void cancel_timer(struct timer_list *list,unsigned int timeid);
+
+timer_list 管理所有的timer的一个表，存放在这个表中管理起来，时间到执行，将timer移除出去
+    timer1 timer2 timer3
+    遍历里面的所有的timer，找到要执行timer，执行完删除
+    下一次再检查看那个timer到时间点了
+    哪个timer需要被触发了，就来处理这个timer
+    1 秒以后就要来处理这个表，触发相关的timer
+    直到所有的timer全部遍历完成，销毁释放timer_list
+
+// 返回下一个最先需要的触发的时间，使用了一个系统timer
+// 使用系统的处理 等待超时机制
+// 网路 在监听网络的时候会有一个超时
+// 通过超时，真的有消息数据返回了，执行扫描timer_list
+// 返回下一次执行的最小的时间
+// 每一个线程 进程都需要自己的timer_list 同一个进程中的timer的回掉在一个timer_list中
+int update_timer_list(struct timer_list *list);
+
+文件的异步读写
+
+同步与异步的区别：
+
+100M的数据写入磁盘：10s 在没有完成之前不能做其他的动作 等待磁盘完成之后cpu再继续工作
+并发中其他人要等待处理
+CPU一直再等待休眠的状态
+
+NodeJS 的数据类型
+基本的数据类型
+    整数
+    小数
+    逻辑变量
+        console.log(1);
+        console.log(1.0);
+        console.log(true); 逻辑变量
+定义一个变量
+    var a; 定义一个变量
+    a = 3.5;
+
+数组里面可以存储任意类型
+
+以socket应用过程为路线，以函数调用为线索，按照代码的执行路线将整个网络的组织和架构串联成一个整体
+Linux内核严谨的按照TCP协议的要求划分层并组织结构数据包的传递
+    根据内核执行TCP协议的过程，沿着客户端应用程序数据传送到服务器，数据被服务器网卡接收，最终到服务程序的整个过程的执行追踪
+Linux应用程序使用的是C运行库的GNU的glibc
+
+库函数socket()
+#include <errno.h>
+#include <sys/socket.h>
+
+int 
+__socket(domain,type,protocol)
+    int domain,
+    int type,
+    int protocol;
+{
+    _set_errno (ENOSYS);
+    return -1;
+}
+
+
+virtual box Linux 安装配置网络
+1.配置网卡
+ip addr 查看ip
+/etc/sysconfig/network-script/ 修改网卡的配置
+ip跟主机的IP在同一个网段内
+2.测试连通性
+    systemctl restart network
+    ip addr
+    检测主机与外网的连通性
+    ping -c4 IP
+
+桥接网卡：桥接网卡完全共享宿主机所接入的网络，当宿主机网络发生变化时，宿主机的也相当于接入了新的网络，ip地址也会发生相应的变动
+NAT网络：在二层上是一个独立的网络，在三层上需要由宿主机做NAT，以及共享宿主机的
+
+startx 开启图形界面
+
+编写线程安全的类不是难事，使用同步原语(synchronization primitives)保护内部状态即可
+但是对象的生与死不能由对象自身拥有的mutex(互斥器)来保护
+如何避免对象析构可能存在的race condition(竞态条件)是C++多线程编程面临的基本问题，可以借助shared_ptr和weak_ptr解决
+这也是实现线程安全的Observer模式的必备技术
+熟悉互斥器，竞态条件，智能指针，Observer设计模式
+
+当析构函数遇到多线程
+C++要求程序员自己管理对象的生命周期，在多线程环境下尤为困难。
+当一个对象不能被多个对象同时看到时，那么对象的销毁时机就会变得模糊不清，可能出现多种竞态条件(race condition)
+
+    在即将析构一个对象时，从何而知此刻是否还有别的线程正在执行该对象的成员函数
+    如何保证在执行成员函数期间，对象不会再另一个线程中被析构？
+    在调用某个对象的成员函数之前，如何得知这个对象还活着？它的析构函数会不会碰巧执行到一半？
+
+JavaScript中的变量是独树一帜的
+变量就是特定的时间点的一个特定值的名称
+原始值：最简单的数据
+引用值：由多个值构成的对象
+把一个值赋值给一个对象时，JavaScript引擎必须确定这个值是原始值还是引用值
+
+动态属性：对于引用值而言，可以随时添加修改和删除其属性和方法
+let person = new Object();
+person.name = "Nicholas";
+console.log(person.name);
+
+原始值不能有属性:尝试给原始值添加属性并不会报错
+let name = "Nicholas";
+name.age = 27;
+console.log(name.age);      // undefined
+
+nodejs组成和原理
+nodejs 主要由v8 libuv 第三方的库组成(cares异步解析库，http解析器，http2解析器)
+js引擎v8
+nodejs是基于v8的运行时，利用v8提供的能力，极大的扩展了js的能力，这种扩展不是为了增加新的语言的特性
+而是为了增加功能模块
+例如：在前端中，我们没有
+
+C/C++的基础
+MySQL的基础语言
+大规模系统：开发和运维
+疑难问题：通过源码了解内部的实现
+
+配置文加的启动源码
+参数变量的语言分析
+MySQL创建连接的源码
+
+I/O 密集型node I/O请求都是异步的 sql查询请求
+restful api  请求和处理只需少量的文本，不需要大量的逻辑，并发处理连接
+
+nodejs没有所谓的web容器 不是独立的语言，不用使用web服务器
+
+nodejs的语言由c c++ js组成
+libuv是C语言编写，网络和操作系统的理解 unix网络编程 Linux系统编程手册 tcp/ip权威指南
+阅读源码
+Linux内核源码
+
+Object类型 是ECMAScript中最常用的类型
+ 适合在存储和在网络中交换数据
+ 显式的创建Object的实例两种：new/Object的构造函数
+
+ markdown学习
+ markdown的语法：
+    # h1 一级标题
+    ### h3 三级标题
+
+自然段
+    空行
+换行
+    两个空格
+
+向数据库中插入文档
+    向集合中插入一个或者多个文档
+    db.<collection>.insert({name:"yong",age:23});
+    db.<collection>.find();
+    db.<collection>.insert([
+        {name:h1,age:12},
+        {name:h2},age:23}
+    ]);
+
+    _id:ObjectId 向集合中插入文档时，如果没有指定属性
+    自动添加属性id 唯一Id 文档的唯一标识
+    调用ObjectId() 生成一个Id
+
+    开发环境的数据导入到生产环境的数据库
+    Id不同代表不同的数据
+
+    db.<collection>.insert("_id":"12345");
+
+    调用更清晰
+    db.<collection>.insertOne()
+    db.<collection>.insertMany()
+
+    查询
+        db.<collection>.find();
+        find用来查询结合中所有符合条件的文档
+        没条件找所有的文档
+        db.<collection>.find({});  空对象跟不写完全一样
+        db.<collection>.find({_id:"hello"}); 查找_id="hello" _id 字段名跟属性名一个意思
+        db.<collection>.find({age:28,name:"yong"});  同时复合两个条件查询所有的符合条件的文档
+
+        db.<collection>.findOne({age:28});集合中符合条件的第一个文档
+
+        find 返回的是一个数组 xx[0].xx
+        findOne 返回一个具体的文档 findOne().name
+        find.count(); 统计数量   find.length()  也返回数组的长度
+
+        db.<collection>.update(查询条件，修改的新对象);
+
+        db.stus.update({name:"沙和尚"},{age:28}); 将沙和尚的age改为28 这样改会只剩下{age:28}
+        使用修改操作符来修改文档的具体的字段 field字段
+        $set 用来修改文档中的指定属性
+        db.stua.update({_id:ObjectId("")},
+        {$set:{
+            age:28, address:"流沙河"
+        }
+        });
+
+        删除一个属性 不需要字段的具体值
+        db.stua.update({_id:ObjectId("")},
+        {$unset:{
+            age, address
+        }
+        });
+        update()默认情况下只会改一个
+        修改查询到的所有的文档
+        db.collection.updateMany({"name":"猪八戒"},{
+            $set{
+                address:"高老庄"
+            }
+        });
+        updateOne();
+        update既可以修改一个，也可以修改一个
+        db.stua.update({_id:ObjectId("")},
+        {$unset:{
+            address:"花果山"
+        }
+        });
+
+
+
+        
+开发游戏所需的基础知识
+    http server 上传下载服务器
+    基于游戏的需求的前提下
+    全面的转入游戏服务器的开发
+    以项目为准
+
+相关的目录
+依赖的模块
+高性能的webserver experss模块 热更新 语音聊天
+websocket模块 ws 支持h5的游戏
+数据存储 mysql redis
+
+NodeJS 巧妙的结合Reactor模型和JavaScript所擅长的回调风格，大大降低了开发高并发服务器的成本
+了解NodeJS的底层机制 学习到更多的计算机体系知识 内存管理 多线程编程
+
+使用C++编写NodeJS Addon 可以让NodeJS有更广阔的空间
+
+Actor模型 强大的分布式能力
+远程调用
+    计算机协议：开发网络中的计算机程序
+    修改代码，restful
+
+socket client stub 
+    服务端本地的某个函数调用了某个函数
+server stub 进行编码解码
+
+异构问题
+
+服务调用 Erlang 调用其他的服务程序
+
+
